@@ -1,2 +1,1 @@
-# albegosu
-# albegous
+[![Typing SVG](https://readme-typing-svg.demolab.com?font=Fira+Code&weight=100&size=15&duration=3000&pause=1000&color=47F725&center=true&vCenter=true&multiline=true&width=1200&lines=Hey+you!+%E2%9C%8C%F0%9F%8F%BD;Nice+to+see+you+here.+Working+%F0%9F%8F%9A%EF%B8%8F)](https://git.io/typing-svg)
