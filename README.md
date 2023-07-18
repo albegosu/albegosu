@@ -68,10 +68,6 @@ I believe everything is possible with attitude, <br> we can always contribute so
     <a href="https://www.linkedin.com/in/alberto-glez-3a50277a/" target="_blank">
       <img width="40px" src="https://raw.githubusercontent.com/rahuldkjain/github-profile-readme-generator/master/src/images/icons/Social/linked-in-alt.svg" alt="LinkedIn"/>
     </a>
-    &emsp; 
-    <a href="https://www.instagram.com/albert0glez/" target="_blank">
-      <img width="40px" src="https://raw.githubusercontent.com/rahuldkjain/github-profile-readme-generator/master/src/images/icons/Social/instagram.svg" alt="Instagram"/>
-    </a>
 </p>  
 
 -----
