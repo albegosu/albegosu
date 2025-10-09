@@ -3,12 +3,3 @@
 <p align="center">
 	🧑‍💻 I’m Junior Full Stack Web Developer.
 </p>
-<p align="center">
-	Let's go 💪🏼
-</p>
-
------
-
-<p align="center"> 
-	<img src="https://komarev.com/ghpvc/?username=albegosu" alt="albegosu" /> 
-</p>
