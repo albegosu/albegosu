@@ -42,6 +42,10 @@ jobs:
         run: npm run build -- --base=/albegosu/unir-masterclass/
         working-directory: _masterclass
 
+      - name: Inject back button into masterclass
+        run: |
+          sed -i 's|</body>|<a href="/albegosu/" style="position:fixed;top:16px;left:16px;z-index:9999;display:inline-flex;align-items:center;gap:6px;font-family:-apple-system,BlinkMacSystemFont,Segoe UI,sans-serif;font-size:13px;color:#5f5e5a;text-decoration:none;background:#ffffff;border:0.5px solid rgba(0,0,0,0.11);border-radius:8px;padding:6px 10px;box-shadow:0 1px 4px rgba(0,0,0,0.08);" onmouseover="this.style.color='"'"'#1a1a18'"'"';this.style.borderColor='"'"'rgba(0,0,0,0.22)'"'"'" onmouseout="this.style.color='"'"'#5f5e5a'"'"';this.style.borderColor='"'"'rgba(0,0,0,0.11)'"'"'"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>Volver al inicio</a></body>|' _masterclass/dist/index.html
+
       - name: Assemble site
         run: |
           mkdir -p _site
