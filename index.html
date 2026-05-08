@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Alberto — Notes & Guides</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-size: 16px;
+    line-height: 1.7;
+    background: #f5f5f0;
+    color: #1a1a18;
+    padding: 2.5rem 1.25rem;
+  }
+
+  .container { max-width: 820px; margin: 0 auto; }
+
+  /* Header */
+  .page-header { margin-bottom: 3rem; }
+  .page-header h1 { font-size: 22px; font-weight: 500; color: #1a1a18; margin-bottom: 4px; }
+  .page-header p { font-size: 14px; color: #888780; }
+
+  /* Sections */
+  .section { margin-bottom: 2.25rem; }
+  .section-label {
+    font-size: 11px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.09em;
+    color: #888780;
+    margin: 0 0 0.75rem;
+  }
+
+  /* Cards */
+  .card {
+    background: #ffffff;
+    border: 0.5px solid rgba(0,0,0,0.11);
+    border-radius: 12px;
+    padding: 1.1rem 1.25rem;
+  }
+  .card + .card { margin-top: 10px; }
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+  .grid-auto { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 10px; }
+
+  .card-icon { font-size: 20px; color: #888780; margin-bottom: 8px; }
+  .card-title { font-size: 14px; font-weight: 500; color: #1a1a18; margin: 0 0 6px; }
+  .card-body { font-size: 13px; color: #5f5e5a; line-height: 1.6; }
+  .card-body + .card-body { margin-top: 6px; }
+  .card-body strong { font-weight: 500; color: #1a1a18; }
+  .card-body em { font-style: italic; }
+  .card-body code {
+    font-family: 'SF Mono', 'Fira Code', monospace;
+    font-size: 12px;
+    background: #f1efe8;
+    padding: 1px 5px;
+    border-radius: 4px;
+    color: #444441;
+  }
+
+  /* Badges */
+  .badge {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 500;
+    padding: 2px 8px;
+    border-radius: 6px;
+    margin-bottom: 8px;
+  }
+  .badge-teal   { background: #E1F5EE; color: #0F6E56; }
+  .badge-purple { background: #EEEDFE; color: #3C3489; }
+  .badge-amber  { background: #FAEEDA; color: #854F0B; }
+  .badge-coral  { background: #FAECE7; color: #993C1D; }
+  .badge-blue   { background: #E6F1FB; color: #185FA5; }
+  .badge-green  { background: #EAF3DE; color: #3B6D11; }
+  .badge-gray   { background: #f1efe8; color: #5f5e5a; }
+
+  /* Rule rows */
+  .rule-list { display: flex; flex-direction: column; }
+  .rule {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 10px 0;
+    border-bottom: 0.5px solid rgba(0,0,0,0.08);
+  }
+  .rule:last-child { border-bottom: none; padding-bottom: 0; }
+  .rule:first-child { padding-top: 0; }
+  .rule i { font-size: 16px; color: #888780; margin-top: 2px; flex-shrink: 0; }
+  .rule-text { font-size: 13px; color: #1a1a18; line-height: 1.55; }
+  .rule-text strong { font-weight: 500; }
+  .rule-text .muted { color: #5f5e5a; font-weight: 400; }
+
+  /* Callout */
+  .callout {
+    background: #f1efe8;
+    border-radius: 8px;
+    padding: 10px 14px;
+    font-size: 13px;
+    color: #5f5e5a;
+    margin-top: 10px;
+    line-height: 1.55;
+  }
+  .callout strong { color: #1a1a18; font-weight: 500; }
+
+  /* Divider */
+  .divider {
+    border: none;
+    border-top: 0.5px solid rgba(0,0,0,0.08);
+    margin: 1.25rem 0;
+  }
+
+  /* Insight box */
+  .insight {
+    border-left: 2px solid #B5D4F4;
+    padding: 8px 12px;
+    margin-top: 10px;
+    font-size: 13px;
+    color: #5f5e5a;
+    line-height: 1.55;
+  }
+  .insight strong { color: #1a1a18; font-weight: 500; }
+
+  /* Index link cards */
+  .index-card {
+    background: #ffffff;
+    border: 0.5px solid rgba(0,0,0,0.11);
+    border-radius: 12px;
+    padding: 1rem 1.25rem;
+    text-decoration: none;
+    color: inherit;
+    display: block;
+    transition: border-color 0.15s, box-shadow 0.15s;
+  }
+  .index-card:hover {
+    border-color: rgba(0,0,0,0.22);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  }
+  .index-card + .index-card { margin-top: 10px; }
+  .index-card-meta {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 6px;
+  }
+  .index-card-meta .card-icon { font-size: 16px; margin: 0; }
+  .index-card-title { font-size: 14px; font-weight: 500; color: #1a1a18; }
+  .index-card-desc { font-size: 13px; color: #5f5e5a; line-height: 1.55; }
+  .index-card-footer {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 10px;
+  }
+  .index-card-footer .arrow {
+    font-size: 14px;
+    color: #b4b2a9;
+    margin-left: auto;
+  }
+
+  /* Profile intro */
+  .profile {
+    display: flex;
+    align-items: flex-start;
+    gap: 1.25rem;
+    margin-bottom: 2.5rem;
+  }
+  .profile-avatar {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: #e8e6df;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    color: #888780;
+    flex-shrink: 0;
+    border: 0.5px solid rgba(0,0,0,0.1);
+  }
+  .profile-name { font-size: 18px; font-weight: 500; color: #1a1a18; margin-bottom: 2px; }
+  .profile-bio { font-size: 13px; color: #5f5e5a; line-height: 1.55; }
+
+  /* Responsive */
+  @media (max-width: 640px) {
+    .grid-2, .grid-3, .grid-auto { grid-template-columns: 1fr; }
+    .profile { flex-direction: column; gap: 0.75rem; }
+  }
+
+  /* Dark mode */
+  @media (prefers-color-scheme: dark) {
+    body { background: #1c1c1a; color: #e8e6df; }
+    .page-header h1 { color: #e8e6df; }
+    .card { background: #252523; border-color: rgba(255,255,255,0.09); }
+    .card-title { color: #e8e6df; }
+    .card-body { color: #a8a69f; }
+    .card-body strong { color: #e8e6df; }
+    .card-body code { background: #2c2c2a; color: #c8c6bf; }
+    .rule-text { color: #e8e6df; }
+    .rule-text .muted { color: #888780; }
+    .callout { background: #2c2c2a; color: #888780; }
+    .callout strong { color: #e8e6df; }
+    .insight { border-left-color: #185FA5; color: #888780; }
+    .insight strong { color: #e8e6df; }
+    .badge-teal   { background: #085041; color: #9FE1CB; }
+    .badge-purple { background: #26215C; color: #CECBF6; }
+    .badge-amber  { background: #412402; color: #FAC775; }
+    .badge-coral  { background: #4A1B0C; color: #F5C4B3; }
+    .badge-blue   { background: #042C53; color: #B5D4F4; }
+    .badge-green  { background: #173404; color: #C0DD97; }
+    .badge-gray   { background: #2c2c2a; color: #888780; }
+    .profile-avatar { background: #2c2c2a; border-color: rgba(255,255,255,0.1); }
+    .profile-name { color: #e8e6df; }
+    .profile-bio { color: #888780; }
+    .index-card { background: #252523; border-color: rgba(255,255,255,0.09); }
+    .index-card:hover { border-color: rgba(255,255,255,0.2); box-shadow: 0 2px 8px rgba(0,0,0,0.3); }
+    .index-card-title { color: #e8e6df; }
+    .index-card-desc { color: #a8a69f; }
+    .index-card-footer .arrow { color: #555450; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <!-- Profile -->
+  <div class="profile">
+    <div class="profile-avatar"><i class="ti ti-user"></i></div>
+    <div>
+      <p class="profile-name">Alberto</p>
+      <p class="profile-bio">Product &amp; engineering. Notes on tools, systems, and how things work in practice.<br>Building on <a href="#" style="color: inherit; text-decoration: underline; text-underline-offset: 2px;">BetSolar</a> · Madrid</p>
+    </div>
+  </div>
+
+
+  <!-- AI & Dev Tools -->
+  <div class="section">
+    <p class="section-label">AI &amp; Dev Tools</p>
+
+    <a href="cursor-token-efficiency.html" class="index-card">
+      <div class="index-card-meta">
+        <div class="card-icon"><i class="ti ti-sparkles"></i></div>
+        <span class="index-card-title">Cursor — Model Selection &amp; Token Efficiency</span>
+      </div>
+      <p class="index-card-desc">Key takeaways from two Cursor field engineering sessions. Covers the planning-first workflow, model routing, context hygiene, and caching traps.</p>
+      <div class="index-card-footer">
+        <span class="badge badge-gray">Cursor</span>
+        <span class="badge badge-blue">LLMs</span>
+        <i class="ti ti-arrow-right arrow"></i>
+      </div>
+    </a>
+
+  </div>
+
+
+  <!-- About this space -->
+  <div class="section">
+    <p class="section-label">About</p>
+    <div class="card">
+      <div class="rule-list">
+        <div class="rule">
+          <i class="ti ti-notes"></i>
+          <p class="rule-text"><strong>What this is.</strong> <span class="muted">A running collection of guides, references, and notes I find useful enough to keep around in a structured format.</span></p>
+        </div>
+        <div class="rule">
+          <i class="ti ti-tools"></i>
+          <p class="rule-text"><strong>Format.</strong> <span class="muted">Each page is a self-contained HTML document — no framework, no build step, easy to read and share.</span></p>
+        </div>
+        <div class="rule">
+          <i class="ti ti-brand-github"></i>
+          <p class="rule-text"><strong>Source.</strong> <span class="muted">Everything lives in a single repo on GitHub. Pages are served directly from there.</span></p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>
