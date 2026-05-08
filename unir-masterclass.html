@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>UNIR Masterclass — How to survive Kit</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-size: 16px;
+    line-height: 1.7;
+    background: #f5f5f0;
+    color: #1a1a18;
+    padding: 2.5rem 1.25rem 0 1.25rem;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .container { max-width: 820px; margin: 0 auto; flex: 1; }
+
+  /* Header */
+  .page-header { margin-bottom: 2rem; }
+  .back-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    color: #5f5e5a;
+    text-decoration: none;
+    background: #ffffff;
+    border: 0.5px solid rgba(0,0,0,0.11);
+    border-radius: 8px;
+    padding: 6px 10px;
+    margin-bottom: 12px;
+  }
+  .back-button:hover { color: #1a1a18; border-color: rgba(0,0,0,0.18); }
+  .page-header h1 { font-size: 22px; font-weight: 500; color: #1a1a18; margin-bottom: 4px; }
+  .page-header p { font-size: 14px; color: #888780; }
+
+  /* Sections */
+  .section { margin-bottom: 2.25rem; }
+  .section-label {
+    font-size: 11px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.09em;
+    color: #888780;
+    margin: 0 0 0.75rem;
+  }
+
+  /* Cards */
+  .card {
+    background: #ffffff;
+    border: 0.5px solid rgba(0,0,0,0.11);
+    border-radius: 12px;
+    padding: 1.1rem 1.25rem;
+  }
+  .card + .card { margin-top: 10px; }
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .grid-2 .card + .card { margin-top: 0; }
+
+  .card-icon { font-size: 20px; color: #888780; margin-bottom: 8px; }
+  .card-title { font-size: 14px; font-weight: 500; color: #1a1a18; margin: 0 0 6px; }
+  .card-body { font-size: 13px; color: #5f5e5a; line-height: 1.6; }
+  .card-body + .card-body { margin-top: 6px; }
+  .card-body strong { font-weight: 500; color: #1a1a18; }
+
+  /* Badges */
+  .badge {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 500;
+    padding: 2px 8px;
+    border-radius: 6px;
+    margin-bottom: 8px;
+  }
+  .badge-teal   { background: #E1F5EE; color: #0F6E56; }
+  .badge-purple { background: #EEEDFE; color: #3C3489; }
+  .badge-amber  { background: #FAEEDA; color: #854F0B; }
+  .badge-coral  { background: #FAECE7; color: #993C1D; }
+  .badge-blue   { background: #E6F1FB; color: #185FA5; }
+  .badge-green  { background: #EAF3DE; color: #3B6D11; }
+  .badge-gray   { background: #f1efe8; color: #5f5e5a; }
+
+  /* Rule rows */
+  .rule-list { display: flex; flex-direction: column; }
+  .rule {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 10px 0;
+    border-bottom: 0.5px solid rgba(0,0,0,0.08);
+  }
+  .rule:last-child { border-bottom: none; padding-bottom: 0; }
+  .rule:first-child { padding-top: 0; }
+  .rule i { font-size: 16px; color: #888780; margin-top: 2px; flex-shrink: 0; }
+  .rule-text { font-size: 13px; color: #1a1a18; line-height: 1.55; }
+  .rule-text strong { font-weight: 500; }
+  .rule-text .muted { color: #5f5e5a; font-weight: 400; }
+
+  /* Timeline */
+  .timeline { display: flex; flex-direction: column; gap: 0; }
+  .timeline-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 10px 0;
+    border-bottom: 0.5px solid rgba(0,0,0,0.07);
+  }
+  .timeline-item:last-child { border-bottom: none; padding-bottom: 0; }
+  .timeline-item:first-child { padding-top: 0; }
+  .timeline-year {
+    flex-shrink: 0;
+    font-size: 11px;
+    font-weight: 500;
+    color: #888780;
+    width: 76px;
+    padding-top: 2px;
+  }
+  .timeline-right { flex: 1; }
+  .timeline-position { font-size: 13px; font-weight: 500; color: #1a1a18; }
+  .timeline-company { font-size: 13px; color: #5f5e5a; }
+  .timeline-location { font-size: 12px; color: #b4b2a9; }
+
+  /* Comparison */
+  .comparison-block { }
+  .comparison-heading {
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    color: #888780;
+    margin-bottom: 10px;
+  }
+  .comparison-item {
+    padding: 8px 0;
+    border-bottom: 0.5px solid rgba(0,0,0,0.07);
+  }
+  .comparison-item:last-child { border-bottom: none; padding-bottom: 0; }
+  .comparison-item:first-child { padding-top: 0; }
+  .comparison-item-title { font-size: 13px; font-weight: 500; color: #1a1a18; margin-bottom: 2px; }
+  .comparison-item-text { font-size: 13px; color: #5f5e5a; line-height: 1.55; }
+
+  /* Soft skills grid */
+  .skills-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .skills-grid .card + .card { margin-top: 0; }
+
+  /* Callout */
+  .callout {
+    background: #f1efe8;
+    border-radius: 8px;
+    padding: 10px 14px;
+    font-size: 13px;
+    color: #5f5e5a;
+    margin-top: 10px;
+    line-height: 1.55;
+  }
+  .callout strong { color: #1a1a18; font-weight: 500; }
+
+  /* Highlight pills */
+  .pills { display: flex; gap: 8px; flex-wrap: wrap; }
+  .pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: #ffffff;
+    border: 0.5px solid rgba(0,0,0,0.11);
+    border-radius: 20px;
+    padding: 6px 12px;
+    font-size: 13px;
+    color: #1a1a18;
+  }
+  .pill i { font-size: 15px; color: #888780; }
+
+  /* Profile intro card */
+  .profile-card {
+    display: flex;
+    align-items: flex-start;
+    gap: 1.25rem;
+  }
+  .profile-avatar {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: #e8e6df;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    color: #888780;
+    flex-shrink: 0;
+    border: 0.5px solid rgba(0,0,0,0.1);
+  }
+  .profile-name { font-size: 15px; font-weight: 500; color: #1a1a18; margin-bottom: 2px; }
+  .profile-subtitle { font-size: 13px; color: #5f5e5a; margin-bottom: 10px; }
+  .profile-tags { display: flex; flex-wrap: wrap; gap: 6px; }
+  .profile-tag {
+    font-size: 12px;
+    background: #f1efe8;
+    border-radius: 6px;
+    padding: 2px 8px;
+    color: #5f5e5a;
+  }
+  .profile-tag span { color: #888780; margin-left: 2px; }
+
+  /* Footer */
+  .site-footer {
+    padding: 1.25rem 0;
+    text-align: center;
+    font-size: 12px;
+    color: #b4b2a9;
+    border-top: 0.5px solid rgba(0,0,0,0.08);
+  }
+  .site-footer a { color: #888780; text-decoration: none; font-weight: 500; }
+  .site-footer a:hover { color: #1a1a18; }
+  .site-footer i { vertical-align: -2px; margin-right: 3px; font-size: 13px; }
+
+  /* Responsive */
+  @media (max-width: 640px) {
+    .grid-2, .skills-grid { grid-template-columns: 1fr; }
+    .profile-card { flex-direction: column; gap: 0.75rem; }
+  }
+
+  /* Dark mode */
+  @media (prefers-color-scheme: dark) {
+    body { background: #1c1c1a; color: #e8e6df; }
+    .page-header h1 { color: #e8e6df; }
+    .back-button { background: #252523; color: #a8a69f; border-color: rgba(255,255,255,0.09); }
+    .back-button:hover { color: #e8e6df; border-color: rgba(255,255,255,0.16); }
+    .card { background: #252523; border-color: rgba(255,255,255,0.09); }
+    .card-title { color: #e8e6df; }
+    .card-body { color: #a8a69f; }
+    .card-body strong { color: #e8e6df; }
+    .rule-text { color: #e8e6df; }
+    .rule-text .muted { color: #888780; }
+    .rule { border-bottom-color: rgba(255,255,255,0.06); }
+    .timeline-item { border-bottom-color: rgba(255,255,255,0.06); }
+    .timeline-position { color: #e8e6df; }
+    .timeline-company { color: #a8a69f; }
+    .comparison-item { border-bottom-color: rgba(255,255,255,0.06); }
+    .comparison-item-title { color: #e8e6df; }
+    .comparison-item-text { color: #888780; }
+    .callout { background: #2c2c2a; color: #888780; }
+    .callout strong { color: #e8e6df; }
+    .pill { background: #252523; border-color: rgba(255,255,255,0.09); color: #e8e6df; }
+    .profile-avatar { background: #2c2c2a; border-color: rgba(255,255,255,0.1); }
+    .profile-name { color: #e8e6df; }
+    .profile-tag { background: #2c2c2a; color: #888780; }
+    .badge-teal   { background: #085041; color: #9FE1CB; }
+    .badge-purple { background: #26215C; color: #CECBF6; }
+    .badge-amber  { background: #412402; color: #FAC775; }
+    .badge-coral  { background: #4A1B0C; color: #F5C4B3; }
+    .badge-blue   { background: #042C53; color: #B5D4F4; }
+    .badge-green  { background: #173404; color: #C0DD97; }
+    .badge-gray   { background: #2c2c2a; color: #888780; }
+    .site-footer { border-top-color: rgba(255,255,255,0.07); color: #555450; }
+    .site-footer a { color: #888780; }
+    .site-footer a:hover { color: #e8e6df; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <div class="page-header">
+    <a class="back-button" href="index.html">
+      <i class="ti ti-arrow-left"></i>
+      Volver al inicio
+    </a>
+    <h1>UNIR Masterclass</h1>
+    <p>How to survive Kit</p>
+  </div>
+
+
+  <!-- Who I am -->
+  <div class="section">
+    <p class="section-label">Who I am</p>
+    <div class="card">
+      <div class="profile-card">
+        <div class="profile-avatar"><i class="ti ti-user"></i></div>
+        <div>
+          <p class="profile-name">Alberto González</p>
+          <p class="profile-subtitle">From Industrial Design to Web Development</p>
+          <div class="profile-tags">
+            <span class="profile-tag">Diseño Industrial <span>ESAPA</span></span>
+            <span class="profile-tag">Máster Full Stack <span>UNIR</span></span>
+            <span class="profile-tag">Bootcamp Full Stack <span>Factoría F5</span></span>
+            <span class="profile-tag">Prueba y error <span>La vida</span></span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- Where I've worked -->
+  <div class="section">
+    <p class="section-label">Where I've worked</p>
+    <div class="card">
+      <div class="timeline">
+        <div class="timeline-item">
+          <div class="timeline-year">2012 – 2017</div>
+          <div class="timeline-right">
+            <p class="timeline-position">Sales Advisor</p>
+            <p class="timeline-company">H&amp;M, PULL&amp;BEAR, Stradivarius, Decathlon</p>
+            <p class="timeline-location">Madrid, Gijón, Avilés</p>
+          </div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-year">2016 – 2017</div>
+          <div class="timeline-right">
+            <p class="timeline-position">Industrial Designer</p>
+            <p class="timeline-company">enPieza eStudio</p>
+            <p class="timeline-location">Madrid</p>
+          </div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-year">2018 – 2022</div>
+          <div class="timeline-right">
+            <p class="timeline-position">Senior CAD Specialist</p>
+            <p class="timeline-company">Align Technology</p>
+            <p class="timeline-location">Madrid</p>
+          </div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-year">2022 – 2023</div>
+          <div class="timeline-right">
+            <p class="timeline-position">Production Manager</p>
+            <p class="timeline-company">MYL ideas</p>
+            <p class="timeline-location">Oviedo, Asturias</p>
+          </div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-year">2024 – 2025</div>
+          <div class="timeline-right">
+            <p class="timeline-position">Consultant and Analyst</p>
+            <p class="timeline-company">Minsait</p>
+            <p class="timeline-location">Gijón, Asturias</p>
+          </div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-year">2025</div>
+          <div class="timeline-right">
+            <p class="timeline-position">Full Stack Engineer</p>
+            <p class="timeline-company">Resizes</p>
+            <p class="timeline-location">Gijón, Asturias</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- Why I studied -->
+  <div class="section">
+    <p class="section-label">Why I Studied the UNIR Master</p>
+    <div class="card">
+      <p class="card-body" style="font-size:14px; margin-bottom:12px; color:#1a1a18;">The motivation behind my choice</p>
+      <div class="rule-list">
+        <div class="rule">
+          <i class="ti ti-stack-2"></i>
+          <p class="rule-text"><strong>Stack.</strong> <span class="muted">The comprehensive technology stack covered in the program aligned perfectly with my career goals and the current industry demands.</span></p>
+        </div>
+        <div class="rule">
+          <i class="ti ti-brand-linkedin"></i>
+          <p class="rule-text"><strong>LinkedIn Research of UNIR Alumni.</strong> <span class="muted">Researching UNIR Master alumni on LinkedIn showed impressive career trajectories and successful transitions into tech roles, which validated the program's effectiveness.</span></p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- When I studied -->
+  <div class="section">
+    <p class="section-label">When I Studied the UNIR Master</p>
+    <div class="card">
+      <p class="card-body" style="font-size:14px; margin-bottom:12px; color:#1a1a18;">Keypoints of my experience</p>
+      <div class="pills">
+        <div class="pill"><i class="ti ti-school"></i>Expert Faculty</div>
+        <div class="pill"><i class="ti ti-books"></i>Educational Content</div>
+        <div class="pill"><i class="ti ti-headset"></i>Support</div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- Master vs Bootcamp -->
+  <div class="section">
+    <p class="section-label">Master vs. Bootcamp</p>
+    <div class="grid-2">
+      <div class="card">
+        <span class="badge badge-purple">Master</span>
+        <div class="comparison-block">
+          <div class="comparison-item">
+            <p class="comparison-item-title">Content Structure</p>
+            <p class="comparison-item-text">The curriculum is well-organized and follows a clear structure, making it easier to follow a logical learning path.</p>
+          </div>
+          <div class="comparison-item">
+            <p class="comparison-item-title">Formality of Activities</p>
+            <p class="comparison-item-text">Assignments and assessments follow a more formal, traditional academic approach.</p>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <span class="badge badge-teal">Bootcamp</span>
+        <div class="comparison-block">
+          <div class="comparison-item">
+            <p class="comparison-item-title">Enhanced Collaborative Work</p>
+            <p class="comparison-item-text">There's a stronger emphasis on collaborative work, with more group projects that really push teamwork and peer learning.</p>
+          </div>
+          <div class="comparison-item">
+            <p class="comparison-item-title">Greater GitHub Usage</p>
+            <p class="comparison-item-text">You'll use GitHub much more frequently for version control, managing projects, and showcasing your work.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- My First Job -->
+  <div class="section">
+    <p class="section-label">My First new Job</p>
+    <div class="card">
+      <p class="card-body" style="font-size:14px; margin-bottom:12px; color:#1a1a18;">The beginning of my new career</p>
+      <div class="rule-list">
+        <div class="rule">
+          <i class="ti ti-door"></i>
+          <p class="rule-text"><strong>100 Doors.</strong> <span class="muted">You need to knock on 100 doors to get an opportunity. Persistence and determination are key when starting your career journey.</span></p>
+        </div>
+        <div class="rule">
+          <i class="ti ti-bulb"></i>
+          <p class="rule-text"><strong>Learning Everywhere.</strong> <span class="muted">My first job at Minsait wasn't about development, but I believe you can learn anywhere. Every experience contributes to your growth as a professional.</span></p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- Soft Skills -->
+  <div class="section">
+    <p class="section-label">Soft Skills</p>
+    <p style="font-size:13px; color:#888780; margin-bottom:10px;">Beyond technical expertise</p>
+    <div class="skills-grid">
+      <div class="card">
+        <div class="card-icon"><i class="ti ti-messages"></i></div>
+        <p class="card-title">Communication</p>
+        <p class="card-body">Being able to clearly express your ideas, ask questions when you don't understand, and listen actively to others is crucial. Even if you're new to the field, showing that you can communicate effectively demonstrates your potential to learn and collaborate.</p>
+      </div>
+      <div class="card">
+        <div class="card-icon"><i class="ti ti-refresh"></i></div>
+        <p class="card-title">Adaptability</p>
+        <p class="card-body">The tech industry changes rapidly. Employers value candidates who can adapt to new technologies, methodologies, and challenges. Show that you're willing to learn and embrace change, even when you're starting with limited knowledge.</p>
+      </div>
+      <div class="card">
+        <div class="card-icon"><i class="ti ti-puzzle"></i></div>
+        <p class="card-title">Problem-Solving Attitude</p>
+        <p class="card-body">You don't need to know everything, but showing that you approach problems with curiosity and persistence is valuable. Employers appreciate candidates who don't give up easily and are willing to research, ask for help, and try different solutions.</p>
+      </div>
+      <div class="card">
+        <div class="card-icon"><i class="ti ti-users"></i></div>
+        <p class="card-title">Teamwork</p>
+        <p class="card-body">Most tech jobs involve working with others. Being collaborative, respectful, and supportive of your teammates matters more than having all the technical answers. Show that you can contribute to a team environment, even as you're learning.</p>
+      </div>
+    </div>
+  </div>
+
+
+</div>
+
+<footer class="site-footer">
+  <i class="ti ti-bolt"></i>Powered by <a href="https://resiz.es" target="_blank" rel="noopener">Resizes</a>
+</footer>
+</body>
+</html>
