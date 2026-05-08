@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cursor — Model Selection & Token Efficiency</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-size: 16px;
+    line-height: 1.7;
+    background: #f5f5f0;
+    color: #1a1a18;
+    padding: 2.5rem 1.25rem;
+  }
+
+  .container { max-width: 820px; margin: 0 auto; }
+
+  /* Header */
+  .page-header { margin-bottom: 2.5rem; }
+  .page-header h1 { font-size: 22px; font-weight: 500; color: #1a1a18; margin-bottom: 4px; }
+  .page-header p { font-size: 14px; color: #888780; }
+
+  /* Sections */
+  .section { margin-bottom: 2.25rem; }
+  .section-label {
+    font-size: 11px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.09em;
+    color: #888780;
+    margin: 0 0 0.75rem;
+  }
+
+  /* Cards */
+  .card {
+    background: #ffffff;
+    border: 0.5px solid rgba(0,0,0,0.11);
+    border-radius: 12px;
+    padding: 1.1rem 1.25rem;
+  }
+  .card + .card { margin-top: 10px; }
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+  .grid-auto { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 10px; }
+
+  .card-icon { font-size: 20px; color: #888780; margin-bottom: 8px; }
+  .card-title { font-size: 14px; font-weight: 500; color: #1a1a18; margin: 0 0 6px; }
+  .card-body { font-size: 13px; color: #5f5e5a; line-height: 1.6; }
+  .card-body + .card-body { margin-top: 6px; }
+  .card-body strong { font-weight: 500; color: #1a1a18; }
+  .card-body em { font-style: italic; }
+  .card-body code {
+    font-family: 'SF Mono', 'Fira Code', monospace;
+    font-size: 12px;
+    background: #f1efe8;
+    padding: 1px 5px;
+    border-radius: 4px;
+    color: #444441;
+  }
+
+  /* Badges */
+  .badge {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 500;
+    padding: 2px 8px;
+    border-radius: 6px;
+    margin-bottom: 8px;
+  }
+  .badge-teal   { background: #E1F5EE; color: #0F6E56; }
+  .badge-purple { background: #EEEDFE; color: #3C3489; }
+  .badge-amber  { background: #FAEEDA; color: #854F0B; }
+  .badge-coral  { background: #FAECE7; color: #993C1D; }
+  .badge-blue   { background: #E6F1FB; color: #185FA5; }
+  .badge-green  { background: #EAF3DE; color: #3B6D11; }
+  .badge-gray   { background: #f1efe8; color: #5f5e5a; }
+
+  /* Flow / workflow */
+  .flow { display: flex; align-items: stretch; gap: 0; }
+  .flow-step {
+    flex: 1;
+    background: #f1efe8;
+    border-radius: 8px;
+    padding: 10px 12px;
+    font-size: 13px;
+    color: #1a1a18;
+    min-width: 0;
+  }
+  .flow-step .step-num {
+    display: block;
+    font-size: 10px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: #888780;
+    margin-bottom: 3px;
+  }
+  .flow-step .step-model {
+    display: inline-block;
+    font-size: 10px;
+    background: #ffffff;
+    border: 0.5px solid rgba(0,0,0,0.12);
+    border-radius: 4px;
+    padding: 1px 5px;
+    color: #5f5e5a;
+    margin-top: 4px;
+  }
+  .flow-arrow {
+    display: flex;
+    align-items: center;
+    padding: 0 5px;
+    color: #b4b2a9;
+    font-size: 14px;
+    flex-shrink: 0;
+  }
+
+  /* Rule rows */
+  .rule-list { display: flex; flex-direction: column; }
+  .rule {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 10px 0;
+    border-bottom: 0.5px solid rgba(0,0,0,0.08);
+  }
+  .rule:last-child { border-bottom: none; padding-bottom: 0; }
+  .rule:first-child { padding-top: 0; }
+  .rule i { font-size: 16px; color: #888780; margin-top: 2px; flex-shrink: 0; }
+  .rule-text { font-size: 13px; color: #1a1a18; line-height: 1.55; }
+  .rule-text strong { font-weight: 500; }
+  .rule-text .muted { color: #5f5e5a; font-weight: 400; }
+
+  /* Table */
+  .data-table { width: 100%; font-size: 13px; border-collapse: collapse; }
+  .data-table th {
+    text-align: left;
+    font-weight: 500;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: #888780;
+    padding: 0 16px 8px 0;
+    border-bottom: 0.5px solid rgba(0,0,0,0.1);
+  }
+  .data-table td {
+    padding: 8px 16px 8px 0;
+    border-bottom: 0.5px solid rgba(0,0,0,0.07);
+    color: #1a1a18;
+    vertical-align: top;
+  }
+  .data-table tr:last-child td { border-bottom: none; }
+  .data-table td:first-child { font-weight: 500; width: 40%; }
+  .data-table td:last-child { color: #5f5e5a; padding-right: 0; }
+
+  /* Callout */
+  .callout {
+    background: #f1efe8;
+    border-radius: 8px;
+    padding: 10px 14px;
+    font-size: 13px;
+    color: #5f5e5a;
+    margin-top: 10px;
+    line-height: 1.55;
+  }
+  .callout strong { color: #1a1a18; font-weight: 500; }
+
+  /* Divider */
+  .divider {
+    border: none;
+    border-top: 0.5px solid rgba(0,0,0,0.08);
+    margin: 1.25rem 0;
+  }
+
+  /* Insight box */
+  .insight {
+    border-left: 2px solid #B5D4F4;
+    padding: 8px 12px;
+    margin-top: 10px;
+    font-size: 13px;
+    color: #5f5e5a;
+    line-height: 1.55;
+  }
+  .insight strong { color: #1a1a18; font-weight: 500; }
+
+  /* Responsive */
+  @media (max-width: 640px) {
+    .flow { flex-direction: column; gap: 6px; }
+    .flow-arrow { transform: rotate(90deg); align-self: center; padding: 2px 0; }
+    .grid-2, .grid-3, .grid-auto { grid-template-columns: 1fr; }
+  }
+
+  /* Dark mode */
+  @media (prefers-color-scheme: dark) {
+    body { background: #1c1c1a; color: #e8e6df; }
+    .page-header h1 { color: #e8e6df; }
+    .card { background: #252523; border-color: rgba(255,255,255,0.09); }
+    .card-title { color: #e8e6df; }
+    .card-body { color: #a8a69f; }
+    .card-body strong { color: #e8e6df; }
+    .card-body code { background: #2c2c2a; color: #c8c6bf; }
+    .flow-step { background: #2c2c2a; color: #e8e6df; }
+    .flow-step .step-model { background: #1c1c1a; border-color: rgba(255,255,255,0.1); color: #888780; }
+    .rule-text { color: #e8e6df; }
+    .rule-text .muted { color: #888780; }
+    .callout { background: #2c2c2a; color: #888780; }
+    .callout strong { color: #e8e6df; }
+    .insight { border-left-color: #185FA5; color: #888780; }
+    .insight strong { color: #e8e6df; }
+    .data-table td { color: #e8e6df; border-bottom-color: rgba(255,255,255,0.06); }
+    .data-table td:last-child { color: #a8a69f; }
+    .data-table th { border-bottom-color: rgba(255,255,255,0.1); }
+    .badge-teal   { background: #085041; color: #9FE1CB; }
+    .badge-purple { background: #26215C; color: #CECBF6; }
+    .badge-amber  { background: #412402; color: #FAC775; }
+    .badge-coral  { background: #4A1B0C; color: #F5C4B3; }
+    .badge-blue   { background: #042C53; color: #B5D4F4; }
+    .badge-green  { background: #173404; color: #C0DD97; }
+    .badge-gray   { background: #2c2c2a; color: #888780; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <div class="page-header">
+    <h1>Cursor — Model Selection &amp; Token Efficiency</h1>
+    <p>Key takeaways from two Cursor field engineering sessions</p>
+  </div>
+
+
+  <!-- 1. MENTAL MODEL -->
+  <div class="section">
+    <p class="section-label">The right framing</p>
+    <div class="card">
+      <p class="card-body" style="font-size:14px; margin-bottom:10px;">
+        Don't optimize individual prompts — optimize <strong>task completion</strong>. Token efficiency is the <em>outcome</em> of solving tasks quickly and correctly, not of counting tokens per prompt.
+      </p>
+      <div class="rule-list">
+        <div class="rule">
+          <i class="ti ti-adjustments-horizontal"></i>
+          <p class="rule-text"><strong>Model sets ~75% of output quality.</strong> <span class="muted">That's fixed. The remaining 25% is yours to control — and it all comes down to context.</span></p>
+        </div>
+        <div class="rule">
+          <i class="ti ti-repeat"></i>
+          <p class="rule-text"><strong>The real cost isn't the plan — it's the correction loop.</strong> <span class="muted">Skipping planning leads to blind edits, bugs to fix, and multiple back-and-forths. That wave of fix cycles costs far more tokens than a good upfront plan.</span></p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- 2. WORKFLOW -->
+  <div class="section">
+    <p class="section-label">Recommended workflow</p>
+    <div class="flow">
+      <div class="flow-step">
+        <span class="step-num">Step 1</span>
+        Pull full ticket context
+        <span class="step-model">via MCP (Jira, Linear…)</span>
+      </div>
+      <div class="flow-arrow"><i class="ti ti-arrow-right"></i></div>
+      <div class="flow-step">
+        <span class="step-num">Step 2</span>
+        Plan with a thinking model
+        <span class="step-model">Sonnet / GPT / Opus</span>
+      </div>
+      <div class="flow-arrow"><i class="ti ti-arrow-right"></i></div>
+      <div class="flow-step">
+        <span class="step-num">Step 3</span>
+        Review &amp; edit the plan
+        <span class="step-model">free — zero tokens</span>
+      </div>
+      <div class="flow-arrow"><i class="ti ti-arrow-right"></i></div>
+      <div class="flow-step">
+        <span class="step-num">Step 4</span>
+        Execute the plan
+        <span class="step-model">Composer 1.5 or 1</span>
+      </div>
+    </div>
+    <div class="callout">
+      <strong>Why this works:</strong> the expensive model is used once to reason through the whole task. Execution is handled by a cheaper, faster model following a clear structure — far less likely to make mistakes than a blind run. Real example from the sessions: planning cost $0.42 · execution $0.76 = $1.18 total, with fewer errors than a planless approach.
+    </div>
+    <div class="insight">
+      <strong>Pro tip — add parallel guidance to your plan prompt:</strong> "Structure the plan with a dependency tree (DAG) and prefix tasks so parallel branches are clear." This makes the plan directly actionable for sub-agents or team distribution.
+    </div>
+  </div>
+
+
+  <!-- 3. MODEL GUIDE -->
+  <div class="section">
+    <p class="section-label">Model selection guide</p>
+    <div class="card">
+      <table class="data-table">
+        <tr>
+          <th>Use case</th>
+          <th>Model to reach for</th>
+        </tr>
+        <tr>
+          <td>Planning, architecture, complex reasoning</td>
+          <td>Frontier / thinking model — Sonnet, GPT, Opus</td>
+        </tr>
+        <tr>
+          <td>Executing a clear, detailed plan</td>
+          <td>Composer 1.5 — fast and cost-effective middle ground</td>
+        </tr>
+        <tr>
+          <td>Docs, research, codebase exploration, small features</td>
+          <td>Composer 1 — cheapest, still very capable for routine tasks</td>
+        </tr>
+        <tr>
+          <td>Routing by task complexity automatically</td>
+          <td>Auto mode — defaults to Composer 2, routes up when needed</td>
+        </tr>
+        <tr>
+          <td>Sub-agents running isolated parallel work</td>
+          <td>Composer 1, or inherit from parent for simple output tasks</td>
+        </tr>
+      </table>
+      <div class="callout" style="margin-top:12px;">
+        Prune your enabled model list in settings to only the ones you actually use. Smaller list = faster decisions. Run the same task on multiple models occasionally to calibrate — but not routinely, since you pay for every run.
+      </div>
+    </div>
+  </div>
+
+
+  <!-- 4. CONTEXT MANAGEMENT -->
+  <div class="section">
+    <p class="section-label">Context management</p>
+    <div class="grid-2">
+      <div class="card">
+        <div class="card-icon"><i class="ti ti-at"></i></div>
+        <span class="badge badge-teal">Precision</span>
+        <p class="card-title">Tag exact resources with @</p>
+        <p class="card-body">Don't let the agent search the entire repo. Tag the specific file, doc, or past chat. It short-circuits semantic search — fewer tokens, faster, more accurate.</p>
+      </div>
+      <div class="card">
+        <div class="card-icon"><i class="ti ti-gauge"></i></div>
+        <span class="badge badge-amber">Limits</span>
+        <p class="card-title">Keep context below 60–65%</p>
+        <p class="card-body">Exceeding the limit triggers compaction — prior context gets compressed and quality degrades, but you still pay for all of it. Monitor the indicator on every chat.</p>
+      </div>
+      <div class="card">
+        <div class="card-icon"><i class="ti ti-message-plus"></i></div>
+        <span class="badge badge-purple">Hygiene</span>
+        <p class="card-title">Start a new chat per task</p>
+        <p class="card-body">Every prior message in a thread inflates all future requests. When switching tasks or features, open a fresh agent — don't continue an unrelated thread.</p>
+      </div>
+      <div class="card">
+        <div class="card-icon"><i class="ti ti-file-text"></i></div>
+        <span class="badge badge-coral">Summarization</span>
+        <p class="card-title">Summarize manually, not automatically</p>
+        <p class="card-body">Auto-summaries give equal weight to everything. Instead: <em>"Summarize focusing on X — save as markdown."</em> Paste the result into a new chat. Context drops dramatically while preserving what matters.</p>
+      </div>
+    </div>
+    <div class="insight" style="margin-top:10px;">
+      You can also fork a chat from any earlier message (hover → fork) to start from a clean mid-point, or reference a past chat with @ to get a summary instead of reloading the full thread.
+    </div>
+  </div>
+
+
+  <!-- 5. RULES, SKILLS, SUB-AGENTS -->
+  <div class="section">
+    <p class="section-label">Rules, skills &amp; sub-agents</p>
+
+    <div class="grid-3">
+      <div class="card">
+        <div class="card-icon"><i class="ti ti-list-check"></i></div>
+        <span class="badge badge-gray">Always-on</span>
+        <p class="card-title">Rules</p>
+        <p class="card-body">Static context added to every request. Keep them short and essential — every rule adds tokens to every single call. Don't replicate a linter or formatter here.</p>
+        <p class="card-body" style="margin-top:6px;"><strong>Scope tip:</strong> nest rules inside <code>/frontend</code> or <code>/backend</code> dirs so they only apply to those files.</p>
+      </div>
+      <div class="card">
+        <div class="card-icon"><i class="ti ti-bolt"></i></div>
+        <span class="badge badge-blue">On-demand</span>
+        <p class="card-title">Skills</p>
+        <p class="card-body">Only the name + description enter the context window upfront. The full skill body is loaded <em>on demand</em> when relevant. You can have many skills without bloating every prompt — this is called progressive disclosure.</p>
+        <p class="card-body" style="margin-top:6px;">The agent can update a failing skill itself. MCPs now work identically — loaded as skills, not dumped into context at startup.</p>
+      </div>
+      <div class="card">
+        <div class="card-icon"><i class="ti ti-topology-star"></i></div>
+        <span class="badge badge-green">Parallel</span>
+        <p class="card-title">Sub-agents</p>
+        <p class="card-body">Best when the <em>how</em> doesn't matter — only the output does. Each sub-agent has its own isolated context window; the parent only receives what you define in the output format.</p>
+        <p class="card-body" style="margin-top:6px;"><strong>Don't use them</strong> when the task is complex and you'll likely need to give feedback mid-run — you can't follow up with a sub-agent once it's started.</p>
+      </div>
+    </div>
+
+    <div class="callout" style="margin-top:10px;">
+      <strong>Commands vs Skills:</strong> a command is a skill with <code>disableModelInvocation: true</code> — meaning you invoke it manually rather than having the agent invoke it automatically. You can migrate existing commands to skills with <code>/migrate to skills</code>. To browse production examples, go to Settings → Plugins → Marketplace → "Cursor Team Kit".
+    </div>
+  </div>
+
+
+  <!-- 6. CACHING -->
+  <div class="section">
+    <p class="section-label">Caching — a hidden cost driver</p>
+    <div class="card">
+      <div class="rule-list">
+        <div class="rule">
+          <i class="ti ti-replace"></i>
+          <p class="rule-text"><strong>Switching models mid-conversation breaks the cache.</strong> <span class="muted">The full thread must be re-sent to the new model. Pick your model at the start and stick with it for the duration of a task.</span></p>
+        </div>
+        <div class="rule">
+          <i class="ti ti-file-diff"></i>
+          <p class="rule-text"><strong>Don't edit rules or skills mid-conversation.</strong> <span class="muted">Once read, they're cached in the thread. Changing them forces a re-read and breaks the cache for everything that follows.</span></p>
+        </div>
+        <div class="rule">
+          <i class="ti ti-route-off"></i>
+          <p class="rule-text"><strong>Auto mode can silently break the cache</strong> by switching models between turns without telling you. For cache-sensitive tasks, pick a model explicitly.</p>
+        </div>
+        <div class="rule">
+          <i class="ti ti-git-branch"></i>
+          <p class="rule-text"><strong>Forking a chat breaks the cache</strong> — it's a brand new session. Sometimes it's worth it (cleaner context = better output), but be aware of the tradeoff.</p>
+        </div>
+        <div class="rule">
+          <i class="ti ti-check"></i>
+          <p class="rule-text"><strong>Adding a new message does not break the cache.</strong> <span class="muted">Prior context is unchanged. A window refresh also doesn't break it — cache is managed server-side by the LLM provider, not in your browser.</span></p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- 7. QUICK REFERENCE -->
+  <div class="section">
+    <p class="section-label">Quick reference — do vs don't</p>
+    <div class="grid-2">
+      <div class="card">
+        <p class="card-title" style="color:#0F6E56; margin-bottom:10px;"><i class="ti ti-circle-check" style="vertical-align:-2px; margin-right:5px;"></i>Do</p>
+        <div class="rule-list">
+          <div class="rule" style="padding-top:0;">
+            <i class="ti ti-point-filled" style="font-size:8px; margin-top:6px; color:#0F6E56;"></i>
+            <p class="rule-text">Give the agent a specific, scoped task</p>
+          </div>
+          <div class="rule">
+            <i class="ti ti-point-filled" style="font-size:8px; margin-top:6px; color:#0F6E56;"></i>
+            <p class="rule-text">Use plan mode for anything non-trivial</p>
+          </div>
+          <div class="rule">
+            <i class="ti ti-point-filled" style="font-size:8px; margin-top:6px; color:#0F6E56;"></i>
+            <p class="rule-text">Edit the plan before pressing Build</p>
+          </div>
+          <div class="rule">
+            <i class="ti ti-point-filled" style="font-size:8px; margin-top:6px; color:#0F6E56;"></i>
+            <p class="rule-text">Tag the exact file with @ instead of letting the agent search</p>
+          </div>
+          <div class="rule">
+            <i class="ti ti-point-filled" style="font-size:8px; margin-top:6px; color:#0F6E56;"></i>
+            <p class="rule-text">Start a new chat when switching tasks</p>
+          </div>
+          <div class="rule">
+            <i class="ti ti-point-filled" style="font-size:8px; margin-top:6px; color:#0F6E56;"></i>
+            <p class="rule-text">Summarize manually when context gets high</p>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <p class="card-title" style="color:#993C1D; margin-bottom:10px;"><i class="ti ti-circle-x" style="vertical-align:-2px; margin-right:5px;"></i>Don't</p>
+        <div class="rule-list">
+          <div class="rule" style="padding-top:0;">
+            <i class="ti ti-point-filled" style="font-size:8px; margin-top:6px; color:#993C1D;"></i>
+            <p class="rule-text">Say "make the app better" on an expensive model</p>
+          </div>
+          <div class="rule">
+            <i class="ti ti-point-filled" style="font-size:8px; margin-top:6px; color:#993C1D;"></i>
+            <p class="rule-text">Switch models in the middle of a task</p>
+          </div>
+          <div class="rule">
+            <i class="ti ti-point-filled" style="font-size:8px; margin-top:6px; color:#993C1D;"></i>
+            <p class="rule-text">Edit rules or skills mid-conversation</p>
+          </div>
+          <div class="rule">
+            <i class="ti ti-point-filled" style="font-size:8px; margin-top:6px; color:#993C1D;"></i>
+            <p class="rule-text">Let context go above 65% without acting</p>
+          </div>
+          <div class="rule">
+            <i class="ti ti-point-filled" style="font-size:8px; margin-top:6px; color:#993C1D;"></i>
+            <p class="rule-text">Use a sub-agent for tasks you'll need to iterate on</p>
+          </div>
+          <div class="rule">
+            <i class="ti ti-point-filled" style="font-size:8px; margin-top:6px; color:#993C1D;"></i>
+            <p class="rule-text">Replicate linter/formatter logic inside rules</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>
