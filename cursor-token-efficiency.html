@@ -20,7 +20,21 @@
   .container { max-width: 820px; margin: 0 auto; }
 
   /* Header */
-  .page-header { margin-bottom: 2.5rem; }
+  .page-header { margin-bottom: 1rem; }
+  .back-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    color: #5f5e5a;
+    text-decoration: none;
+    background: #ffffff;
+    border: 0.5px solid rgba(0,0,0,0.11);
+    border-radius: 8px;
+    padding: 6px 10px;
+    margin-bottom: 12px;
+  }
+  .back-button:hover { color: #1a1a18; border-color: rgba(0,0,0,0.18); }
   .page-header h1 { font-size: 22px; font-weight: 500; color: #1a1a18; margin-bottom: 4px; }
   .page-header p { font-size: 14px; color: #888780; }
 
@@ -46,6 +60,12 @@
   .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
   .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
   .grid-auto { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 10px; }
+  .grid-2 .card + .card,
+  .grid-3 .card + .card,
+  .grid-auto .card + .card { margin-top: 0; }
+  .context-grid { grid-auto-rows: 1fr; align-items: stretch; margin-bottom: 12px; }
+  .context-grid .card { height: 100%; min-height: 230px; }
+  .context-section .insight { margin-top: 12px !important; margin-bottom: 8px; }
 
   .card-icon { font-size: 20px; color: #888780; margin-bottom: 8px; }
   .card-title { font-size: 14px; font-weight: 500; color: #1a1a18; margin: 0 0 6px; }
@@ -80,7 +100,7 @@
   .badge-gray   { background: #f1efe8; color: #5f5e5a; }
 
   /* Flow / workflow */
-  .flow { display: flex; align-items: stretch; gap: 0; }
+  .flow { display: flex; align-items: stretch; gap: 0; margin: 25px 0; }
   .flow-step {
     flex: 1;
     background: #f1efe8;
@@ -191,12 +211,19 @@
     .flow { flex-direction: column; gap: 6px; }
     .flow-arrow { transform: rotate(90deg); align-self: center; padding: 2px 0; }
     .grid-2, .grid-3, .grid-auto { grid-template-columns: 1fr; }
+    .context-grid .card { min-height: 0; }
   }
 
   /* Dark mode */
   @media (prefers-color-scheme: dark) {
     body { background: #1c1c1a; color: #e8e6df; }
     .page-header h1 { color: #e8e6df; }
+    .back-button {
+      background: #252523;
+      color: #a8a69f;
+      border-color: rgba(255,255,255,0.09);
+    }
+    .back-button:hover { color: #e8e6df; border-color: rgba(255,255,255,0.16); }
     .card { background: #252523; border-color: rgba(255,255,255,0.09); }
     .card-title { color: #e8e6df; }
     .card-body { color: #a8a69f; }
@@ -227,13 +254,17 @@
 <div class="container">
 
   <div class="page-header">
+    <a class="back-button" href="index.html">
+      <i class="ti ti-arrow-left"></i>
+      Volver al inicio
+    </a>
     <h1>Cursor — Model Selection &amp; Token Efficiency</h1>
     <p>Key takeaways from two Cursor field engineering sessions</p>
   </div>
 
 
   <!-- 1. MENTAL MODEL -->
-  <div class="section">
+  <div class="section context-section">
     <p class="section-label">The right framing</p>
     <div class="card">
       <p class="card-body" style="font-size:14px; margin-bottom:10px;">
@@ -330,7 +361,7 @@
   <!-- 4. CONTEXT MANAGEMENT -->
   <div class="section">
     <p class="section-label">Context management</p>
-    <div class="grid-2">
+    <div class="grid-2 context-grid">
       <div class="card">
         <div class="card-icon"><i class="ti ti-at"></i></div>
         <span class="badge badge-teal">Precision</span>
