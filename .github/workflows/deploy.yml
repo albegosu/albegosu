@@ -50,6 +50,7 @@ jobs:
         run: |
           mkdir -p _site
           cp *.html _site/
+          [ -f favicon.svg ] && cp favicon.svg _site/
           [ -d assets ] && cp -r assets _site/
           cp -r _masterclass/dist _site/unir-masterclass
 
