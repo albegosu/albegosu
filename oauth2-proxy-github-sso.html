@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>oauth2-proxy — GitHub SSO for Kubernetes Apps</title>
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-size: 16px;
+    line-height: 1.7;
+    background: #f5f5f0;
+    color: #1a1a18;
+    padding: 2.5rem 1.25rem 0 1.25rem;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .container { max-width: 820px; margin: 0 auto; flex: 1; }
+
+  /* Header */
+  .page-header { margin-bottom: 1rem; }
+  .back-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    color: #5f5e5a;
+    text-decoration: none;
+    background: #ffffff;
+    border: 0.5px solid rgba(0,0,0,0.11);
+    border-radius: 8px;
+    padding: 6px 10px;
+    margin-bottom: 12px;
+  }
+  .back-button:hover { color: #1a1a18; border-color: rgba(0,0,0,0.18); }
+  .page-header h1 { font-size: 22px; font-weight: 500; color: #1a1a18; margin-bottom: 4px; }
+  .page-header p { font-size: 14px; color: #888780; }
+
+  /* Sections */
+  .section { margin-bottom: 2.25rem; }
+  .section-label {
+    font-size: 11px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.09em;
+    color: #888780;
+    margin: 0 0 0.75rem;
+  }
+
+  /* Cards */
+  .card {
+    background: #ffffff;
+    border: 0.5px solid rgba(0,0,0,0.11);
+    border-radius: 12px;
+    padding: 1.1rem 1.25rem;
+  }
+  .card + .card { margin-top: 10px; }
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+  .grid-2 .card + .card,
+  .grid-3 .card + .card { margin-top: 0; }
+
+  .card-icon { font-size: 20px; color: #888780; margin-bottom: 8px; }
+  .card-title { font-size: 14px; font-weight: 500; color: #1a1a18; margin: 0 0 6px; }
+  .card-body { font-size: 13px; color: #5f5e5a; line-height: 1.6; }
+  .card-body + .card-body { margin-top: 6px; }
+  .card-body strong { font-weight: 500; color: #1a1a18; }
+  .card-body em { font-style: italic; }
+  .card-body code, .rule-text code {
+    font-family: 'SF Mono', 'Fira Code', monospace;
+    font-size: 12px;
+    background: #f1efe8;
+    padding: 1px 5px;
+    border-radius: 4px;
+    color: #444441;
+  }
+
+  /* Code blocks */
+  .code-block {
+    font-family: 'SF Mono', 'Fira Code', monospace;
+    font-size: 12px;
+    background: #f1efe8;
+    border-radius: 8px;
+    padding: 12px 14px;
+    overflow-x: auto;
+    color: #444441;
+    line-height: 1.65;
+    margin-top: 10px;
+    white-space: pre;
+  }
+
+  /* Badges */
+  .badge {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 500;
+    padding: 2px 8px;
+    border-radius: 6px;
+    margin-bottom: 8px;
+  }
+  .badge-teal   { background: #E1F5EE; color: #0F6E56; }
+  .badge-purple { background: #EEEDFE; color: #3C3489; }
+  .badge-amber  { background: #FAEEDA; color: #854F0B; }
+  .badge-coral  { background: #FAECE7; color: #993C1D; }
+  .badge-blue   { background: #E6F1FB; color: #185FA5; }
+  .badge-green  { background: #EAF3DE; color: #3B6D11; }
+  .badge-gray   { background: #f1efe8; color: #5f5e5a; }
+
+  /* Flow */
+  .flow { display: flex; align-items: stretch; gap: 0; margin: 25px 0; }
+  .flow-step {
+    flex: 1;
+    background: #f1efe8;
+    border-radius: 8px;
+    padding: 10px 12px;
+    font-size: 13px;
+    color: #1a1a18;
+    min-width: 0;
+  }
+  .flow-step .step-num {
+    display: block;
+    font-size: 10px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: #888780;
+    margin-bottom: 3px;
+  }
+  .flow-step .step-model {
+    display: inline-block;
+    font-size: 10px;
+    background: #ffffff;
+    border: 0.5px solid rgba(0,0,0,0.12);
+    border-radius: 4px;
+    padding: 1px 5px;
+    color: #5f5e5a;
+    margin-top: 4px;
+  }
+  .flow-arrow {
+    display: flex;
+    align-items: center;
+    padding: 0 5px;
+    color: #b4b2a9;
+    font-size: 14px;
+    flex-shrink: 0;
+  }
+
+  /* Rule rows */
+  .rule-list { display: flex; flex-direction: column; }
+  .rule {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 10px 0;
+    border-bottom: 0.5px solid rgba(0,0,0,0.08);
+  }
+  .rule:last-child { border-bottom: none; padding-bottom: 0; }
+  .rule:first-child { padding-top: 0; }
+  .rule i { font-size: 16px; color: #888780; margin-top: 2px; flex-shrink: 0; }
+  .rule-text { font-size: 13px; color: #1a1a18; line-height: 1.55; }
+  .rule-text strong { font-weight: 500; }
+  .rule-text .muted { color: #5f5e5a; font-weight: 400; }
+
+  /* Table */
+  .data-table { width: 100%; font-size: 13px; border-collapse: collapse; }
+  .data-table th {
+    text-align: left;
+    font-weight: 500;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: #888780;
+    padding: 0 16px 8px 0;
+    border-bottom: 0.5px solid rgba(0,0,0,0.1);
+  }
+  .data-table td {
+    padding: 8px 16px 8px 0;
+    border-bottom: 0.5px solid rgba(0,0,0,0.07);
+    color: #1a1a18;
+    vertical-align: top;
+  }
+  .data-table tr:last-child td { border-bottom: none; }
+  .data-table td:first-child { font-weight: 500; width: 40%; }
+  .data-table td:last-child { color: #5f5e5a; padding-right: 0; }
+
+  /* Callout */
+  .callout {
+    background: #f1efe8;
+    border-radius: 8px;
+    padding: 10px 14px;
+    font-size: 13px;
+    color: #5f5e5a;
+    margin-top: 10px;
+    line-height: 1.55;
+  }
+  .callout strong { color: #1a1a18; font-weight: 500; }
+  .callout-danger {
+    background: #FAECE7;
+    color: #6b3520;
+  }
+  .callout-danger strong { color: #993C1D; }
+
+  /* Insight box */
+  .insight {
+    border-left: 2px solid #B5D4F4;
+    padding: 8px 12px;
+    margin-top: 10px;
+    font-size: 13px;
+    color: #5f5e5a;
+    line-height: 1.55;
+  }
+  .insight strong { color: #1a1a18; font-weight: 500; }
+
+  /* Footer */
+  .site-footer {
+    padding: 1.25rem 0;
+    text-align: center;
+    font-size: 12px;
+    color: #b4b2a9;
+    border-top: 0.5px solid rgba(0,0,0,0.08);
+  }
+  .site-footer a {
+    color: #888780;
+    text-decoration: none;
+    font-weight: 500;
+  }
+  .site-footer a:hover { color: #1a1a18; }
+  .site-footer i { vertical-align: -2px; margin-right: 3px; font-size: 13px; }
+
+  /* Responsive */
+  @media (max-width: 640px) {
+    .flow { flex-direction: column; gap: 6px; }
+    .flow-arrow { transform: rotate(90deg); align-self: center; padding: 2px 0; }
+    .grid-2, .grid-3 { grid-template-columns: 1fr; }
+  }
+
+  /* Dark mode */
+  html.dark body { background: #1c1c1a; color: #e8e6df; }
+  html.dark .page-header h1 { color: #e8e6df; }
+  html.dark .back-button {
+      background: #252523;
+      color: #a8a69f;
+      border-color: rgba(255,255,255,0.09);
+    }
+  html.dark .back-button:hover { color: #e8e6df; border-color: rgba(255,255,255,0.16); }
+  html.dark .card { background: #252523; border-color: rgba(255,255,255,0.09); }
+  html.dark .card-title { color: #e8e6df; }
+  html.dark .card-body { color: #a8a69f; }
+  html.dark .card-body strong { color: #e8e6df; }
+  html.dark .card-body code, html.dark .rule-text code { background: #2c2c2a; color: #c8c6bf; }
+  html.dark .code-block { background: #2c2c2a; color: #c8c6bf; }
+  html.dark .flow-step { background: #2c2c2a; color: #e8e6df; }
+  html.dark .flow-step .step-model { background: #1c1c1a; border-color: rgba(255,255,255,0.1); color: #888780; }
+  html.dark .rule-text { color: #e8e6df; }
+  html.dark .rule-text .muted { color: #888780; }
+  html.dark .callout { background: #2c2c2a; color: #888780; }
+  html.dark .callout strong { color: #e8e6df; }
+  html.dark .callout-danger { background: #4A1B0C; color: #d9a794; }
+  html.dark .callout-danger strong { color: #F5C4B3; }
+  html.dark .insight { border-left-color: #185FA5; color: #888780; }
+  html.dark .insight strong { color: #e8e6df; }
+  html.dark .data-table td { color: #e8e6df; border-bottom-color: rgba(255,255,255,0.06); }
+  html.dark .data-table td:last-child { color: #a8a69f; }
+  html.dark .data-table th { border-bottom-color: rgba(255,255,255,0.1); }
+  html.dark .badge-teal   { background: #085041; color: #9FE1CB; }
+  html.dark .badge-purple { background: #26215C; color: #CECBF6; }
+  html.dark .badge-amber  { background: #412402; color: #FAC775; }
+  html.dark .badge-coral  { background: #4A1B0C; color: #F5C4B3; }
+  html.dark .badge-blue   { background: #042C53; color: #B5D4F4; }
+  html.dark .badge-green  { background: #173404; color: #C0DD97; }
+  html.dark .badge-gray   { background: #2c2c2a; color: #888780; }
+  html.dark .site-footer { border-top-color: rgba(255,255,255,0.07); color: #555450; }
+  html.dark .site-footer a { color: #888780; }
+  html.dark .site-footer a:hover { color: #e8e6df; }
+
+  /* Theme toggle */
+  .theme-toggle {
+    position: fixed;
+    top: 16px;
+    right: 16px;
+    z-index: 100;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #ffffff;
+    border: 0.5px solid rgba(0,0,0,0.11);
+    border-radius: 8px;
+    cursor: pointer;
+    color: #888780;
+    font-size: 16px;
+    padding: 0;
+  }
+  .theme-toggle:hover { color: #1a1a18; border-color: rgba(0,0,0,0.22); }
+  html.dark .theme-toggle { background: #252523; border-color: rgba(255,255,255,0.09); }
+  html.dark .theme-toggle:hover { color: #e8e6df; border-color: rgba(255,255,255,0.16); }
+</style>
+<script>
+  (function() {
+    var saved = localStorage.getItem('theme');
+    var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    if (saved === 'dark' || (!saved && prefersDark)) {
+      document.documentElement.classList.add('dark');
+    }
+  })();
+</script>
+</head>
+<body>
+<div class="container">
+
+  <div class="page-header">
+    <a class="back-button" href="index.html">
+      <i class="ti ti-arrow-left"></i>
+      Back to home
+    </a>
+    <h1>oauth2-proxy — GitHub SSO for Kubernetes Apps</h1>
+    <p>Locking an internal app behind GitHub org membership with nginx ingress + oauth2-proxy — and the traps I hit doing it in production</p>
+  </div>
+
+
+  <!-- 1. THE PATTERN -->
+  <div class="section">
+    <p class="section-label">The pattern</p>
+    <div class="card">
+      <p class="card-body" style="font-size:14px; margin-bottom:10px;">
+        You have an internal app on a Kubernetes cluster and you want <strong>only members of your GitHub org</strong> to reach it — without touching the app's code. The nginx ingress controller's <code>auth_request</code> mechanism delegates every request to oauth2-proxy, which handles the whole GitHub OAuth dance and sets a session cookie.
+      </p>
+      <div class="flow">
+        <div class="flow-step">
+          <span class="step-num">Step 1</span>
+          Request hits the ingress
+          <span class="step-model">nginx ingress controller</span>
+        </div>
+        <div class="flow-arrow"><i class="ti ti-arrow-right"></i></div>
+        <div class="flow-step">
+          <span class="step-num">Step 2</span>
+          Subrequest to <code>/oauth2/auth</code>
+          <span class="step-model">auth-url annotation</span>
+        </div>
+        <div class="flow-arrow"><i class="ti ti-arrow-right"></i></div>
+        <div class="flow-step">
+          <span class="step-num">Step 3</span>
+          No session? Redirect to GitHub
+          <span class="step-model">auth-signin annotation</span>
+        </div>
+        <div class="flow-arrow"><i class="ti ti-arrow-right"></i></div>
+        <div class="flow-step">
+          <span class="step-num">Step 4</span>
+          Authorized → forward with identity headers
+          <span class="step-model">X-Auth-Request-*</span>
+        </div>
+      </div>
+      <div class="insight">
+        <strong>The app never sees OAuth.</strong> It just receives <code>X-Auth-Request-User</code> and <code>X-Auth-Request-Email</code> on every request. That makes these headers your canonical identity: the backend can use them for per-user data scoping without implementing any auth itself.
+      </div>
+    </div>
+  </div>
+
+
+  <!-- 2. SETUP -->
+  <div class="section">
+    <p class="section-label">Setup — three ingredients</p>
+    <div class="grid-3">
+      <div class="card">
+        <div class="card-icon"><i class="ti ti-brand-github"></i></div>
+        <span class="badge badge-gray">GitHub</span>
+        <p class="card-title">OAuth App</p>
+        <p class="card-body">Create it under the <strong>org's</strong> developer settings, not your personal account. Homepage URL is your app's URL; callback is <code>https://app.example.com/oauth2/callback</code>. Save the Client ID and generate a Client secret.</p>
+      </div>
+      <div class="card">
+        <div class="card-icon"><i class="ti ti-key"></i></div>
+        <span class="badge badge-amber">Secret</span>
+        <p class="card-title">Cookie secret</p>
+        <p class="card-body">oauth2-proxy requires a 16, 24, or 32-byte <strong>base64-encoded</strong> cookie secret. A random string of the right length is not enough — it must decode to exactly those byte counts.</p>
+      </div>
+      <div class="card">
+        <div class="card-icon"><i class="ti ti-lock-cog"></i></div>
+        <span class="badge badge-blue">Delivery</span>
+        <p class="card-title">Secrets sync</p>
+        <p class="card-body">Store client-id, client-secret and cookie-secret in your secrets manager and let External Secrets (or similar) sync them into the Kubernetes Secret the oauth2-proxy chart expects.</p>
+      </div>
+    </div>
+    <div class="callout">
+      <strong>Generating the cookie secret:</strong>
+    </div>
+    <div class="code-block">python3 -c 'import secrets, base64; print(base64.b64encode(secrets.token_bytes(32)).decode())'</div>
+  </div>
+
+
+  <!-- 3. INGRESS ANNOTATIONS -->
+  <div class="section">
+    <p class="section-label">Wiring the ingress</p>
+    <div class="card">
+      <p class="card-body" style="margin-bottom:6px;">Three annotations on the <strong>app's</strong> ingress do all the work. oauth2-proxy itself runs as a normal Deployment + Service (the official Helm chart works fine as a subchart).</p>
+      <div class="code-block">nginx.ingress.kubernetes.io/auth-url: "https://$host/oauth2/auth"
+nginx.ingress.kubernetes.io/auth-signin: "https://$host/oauth2/start?rd=$escaped_request_uri"
+nginx.ingress.kubernetes.io/auth-response-headers: "X-Auth-Request-User, X-Auth-Request-Email"</div>
+      <div class="rule-list" style="margin-top:12px;">
+        <div class="rule">
+          <i class="ti ti-shield-check"></i>
+          <p class="rule-text"><strong>auth-url</strong> <span class="muted">— every request triggers an internal subrequest here. 2xx lets the request through, 401 triggers the signin redirect.</span></p>
+        </div>
+        <div class="rule">
+          <i class="ti ti-login"></i>
+          <p class="rule-text"><strong>auth-signin</strong> <span class="muted">— where unauthenticated users get sent. The <code>rd</code> param preserves the originally requested URL.</span></p>
+        </div>
+        <div class="rule">
+          <i class="ti ti-id-badge-2"></i>
+          <p class="rule-text"><strong>auth-response-headers</strong> <span class="muted">— copies the identity headers from oauth2-proxy's response onto the request forwarded to your app.</span></p>
+        </div>
+      </div>
+      <div class="insight">
+        <strong>Restrict by org:</strong> set the GitHub provider with your org name and the <code>read:org</code> scope. Non-members get a 403 from oauth2-proxy — they never reach the app.
+      </div>
+    </div>
+  </div>
+
+
+  <!-- 4. THE ROLLBACK TRAP -->
+  <div class="section">
+    <p class="section-label">The rollback trap</p>
+    <div class="card">
+      <p class="card-body" style="font-size:14px; margin-bottom:8px;">
+        Rollback order matters more than it looks. The annotations and the Deployment are <strong>independent</strong> pieces of config, and one bad combination takes the whole site down.
+      </p>
+      <div class="rule-list">
+        <div class="rule">
+          <i class="ti ti-circle-check"></i>
+          <p class="rule-text"><strong>Safe: remove the annotations first.</strong> <span class="muted">Dropping <code>auth-url</code>, <code>auth-signin</code> and <code>auth-response-headers</code> from the app ingress restores unauthenticated access on its own. Optionally remove the oauth2-proxy Deployment in the same commit.</span></p>
+        </div>
+        <div class="rule">
+          <i class="ti ti-alert-triangle"></i>
+          <p class="rule-text"><strong>Outage: disable oauth2-proxy while the annotations remain.</strong> <span class="muted">The <code>auth-url</code> now points at a deleted Service. nginx's <code>auth_request</code> fails on every request.</span></p>
+        </div>
+      </div>
+      <div class="callout callout-danger">
+        <strong>Every request returns 500 — a full outage, not an auth bypass.</strong> Failing to reach the auth service is treated as a denial, and there's no "fail open" default. If you're going to tear it down, the annotations go first, always.
+      </div>
+    </div>
+  </div>
+
+
+  <!-- 5. VERIFYING -->
+  <div class="section">
+    <p class="section-label">Verifying it works</p>
+    <div class="card">
+      <div class="rule-list">
+        <div class="rule">
+          <i class="ti ti-eye"></i>
+          <p class="rule-text"><strong>Incognito test.</strong> <span class="muted">Open the app in a private window — you should bounce to GitHub, authorize the OAuth app, and land back where you started. A non-member of the org should get a 403.</span></p>
+        </div>
+        <div class="rule">
+          <i class="ti ti-heartbeat"></i>
+          <p class="rule-text"><strong>Pod health.</strong> <span class="muted">The startup log should show the provider: <code>OAuth2 Proxy v7.x ... configured with GitHub provider</code>.</span></p>
+        </div>
+        <div class="rule">
+          <i class="ti ti-id"></i>
+          <p class="rule-text"><strong>Headers reach the backend.</strong> <span class="muted">Exec into an app pod or add a temporary debug endpoint that echoes <code>X-Auth-Request-*</code>. Your GitHub username and email should be there on every request.</span></p>
+        </div>
+        <div class="rule">
+          <i class="ti ti-wall"></i>
+          <p class="rule-text"><strong>Optional hardening.</strong> <span class="muted">Add a NetworkPolicy so only the ingress controller namespace can reach oauth2-proxy's port (4180). Nothing else needs to talk to it.</span></p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- 6. TROUBLESHOOTING -->
+  <div class="section">
+    <p class="section-label">Troubleshooting</p>
+    <div class="card">
+      <table class="data-table">
+        <tr>
+          <th>Symptom</th>
+          <th>Likely cause &amp; fix</th>
+        </tr>
+        <tr>
+          <td>403 Permission Denied after login</td>
+          <td>User isn't in the org, or their membership is private. Make membership public, or ensure the <code>read:org</code> scope is set and re-authenticate.</td>
+        </tr>
+        <tr>
+          <td>Invalid client credentials</td>
+          <td>Wrong client ID or secret in the secrets manager. Re-check the synced Kubernetes Secret values, not just the source.</td>
+        </tr>
+        <tr>
+          <td>"cookie secret must be 16, 24 or 32 bytes"</td>
+          <td>The secret isn't base64, or decodes to the wrong length. Regenerate with the Python one-liner above.</td>
+        </tr>
+        <tr>
+          <td><code>/oauth2/callback</code> returns 500</td>
+          <td>Callback URL mismatch between the GitHub OAuth app and oauth2-proxy's redirect URL. They must be byte-identical.</td>
+        </tr>
+        <tr>
+          <td>Redirect loop</td>
+          <td>The <code>auth-signin</code> annotation is missing or malformed. It must point to <code>/oauth2/start?rd=$escaped_request_uri</code>.</td>
+        </tr>
+        <tr>
+          <td>Every request 500s</td>
+          <td>The <code>auth-url</code> annotation points at a dead oauth2-proxy Service. See the rollback trap above.</td>
+        </tr>
+      </table>
+    </div>
+  </div>
+
+</div>
+
+<footer class="site-footer">
+  <i class="ti ti-bolt"></i>Powered by <a href="https://resiz.es" target="_blank" rel="noopener">Resizes</a>
+</footer>
+<button class="theme-toggle" id="theme-toggle" aria-label="Toggle theme">
+  <i class="ti ti-moon" id="theme-icon"></i>
+</button>
+<script>
+  (function() {
+    var icon = document.getElementById('theme-icon');
+    var btn  = document.getElementById('theme-toggle');
+    function updateIcon() {
+      icon.className = document.documentElement.classList.contains('dark') ? 'ti ti-sun' : 'ti ti-moon';
+    }
+    updateIcon();
+    btn.addEventListener('click', function() {
+      var isDark = document.documentElement.classList.toggle('dark');
+      localStorage.setItem('theme', isDark ? 'dark' : 'light');
+      updateIcon();
+    });
+  })();
+</script>
+</body>
+</html>
